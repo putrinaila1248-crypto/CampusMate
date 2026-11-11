@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusMate — Asisten Mahasiswa</title>
+<style>
+:root{--navy:#243b67;--blue:#4268b2;--pale:#eef3ff;--ink:#253047;--muted:#778198;--line:#e7ebf2;--bg:#f7f8fc;--white:#fff;--green:#2c9b73;--red:#d65d68}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.app{display:flex;min-height:100vh}.sidebar{width:240px;background:var(--white);border-right:1px solid var(--line);padding:26px 17px;position:fixed;inset:0 auto 0 0}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:21px;color:var(--navy);padding:0 10px 28px}.logo{width:36px;height:36px;border-radius:12px;background:var(--blue);color:white;display:grid;place-items:center;font-size:19px}
+.nav-label{font-size:10px;letter-spacing:1.4px;color:#a0a8b8;font-weight:700;padding:8px 12px}.nav button{width:100%;border:0;background:transparent;text-align:left;padding:12px;border-radius:10px;color:#68748a;font-size:14px;margin:3px 0;cursor:pointer}.nav button.active,.nav button:hover{background:var(--pale);color:var(--blue);font-weight:700}
+.sidebar-note{position:absolute;bottom:25px;left:20px;right:20px;background:#f4f6fb;padding:15px;border-radius:13px;font-size:12px;color:var(--muted);line-height:1.5}
+main{margin-left:240px;width:calc(100% - 240px);padding:28px 34px 50px;max-width:1500px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px}.eyebrow{font-size:12px;color:var(--muted);margin-bottom:5px}.top h1{font-size:25px;margin:0;color:var(--navy)}.date{font-size:13px;color:var(--muted);background:white;border:1px solid var(--line);padding:10px 14px;border-radius:10px}
+.page{display:none}.page.active{display:block}.welcome{background:linear-gradient(115deg,#2c477a,#5279c1);color:white;border-radius:18px;padding:25px 28px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;gap:20px}.welcome h2{margin:0 0 7px;font-size:22px}.welcome p{margin:0;color:#e1e9fb;font-size:14px}.welcome .emoji{font-size:46px;opacity:.9}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}.stat,.panel{background:white;border:1px solid var(--line);border-radius:15px;padding:18px}.stat .s-icon{font-size:20px}.stat .number{font-size:25px;font-weight:800;color:var(--navy);margin:10px 0 3px}.stat small{color:var(--muted);font-size:12px}
+.columns{display:grid;grid-template-columns:1.25fr .85fr;gap:17px}.panel{margin-bottom:17px}.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}.panel h3{font-size:16px;margin:0;color:var(--navy)}.muted{font-size:12px;color:var(--muted)}
+.item{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid #f0f2f6}.item:first-of-type{border-top:0}.time{background:var(--pale);color:var(--blue);font-size:12px;font-weight:700;padding:9px 10px;border-radius:9px;min-width:66px;text-align:center}.item strong{font-size:13px;display:block;margin-bottom:4px}.item small{font-size:11px;color:var(--muted)}
+.btn{border:0;border-radius:9px;background:var(--blue);color:white;padding:10px 14px;font-weight:700;font-size:12px;cursor:pointer}.btn:hover{filter:brightness(.95)}.btn.light{background:var(--pale);color:var(--blue)}.btn.danger{background:#fff0f1;color:var(--red)}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin:4px 0 18px}.section-title h2{margin:0;color:var(--navy);font-size:22px}.toolbar{display:flex;gap:8px;flex-wrap:wrap}
+.formrow{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:12px;color:var(--muted);font-weight:600}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:11px;font:inherit;font-size:13px;background:white;color:var(--ink)}.field textarea{min-height:100px;resize:vertical}.field.full{grid-column:1/-1}
+.listrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;border-top:1px solid #f0f2f6}.listrow strong{font-size:13px}.listrow small{display:block;color:var(--muted);font-size:11px;margin-top:4px}.empty{color:var(--muted);font-size:13px;text-align:center;padding:22px}
+.tag{font-size:10px;padding:5px 8px;border-radius:20px;background:#edf8f3;color:var(--green);white-space:nowrap}.tag.warn{background:#fff4e7;color:#b87924}
+.notice{padding:13px;border:1px solid var(--line);border-radius:10px;margin:9px 0}.notice strong{font-size:13px}.notice p{font-size:12px;color:var(--muted);margin:5px 0 0}
+@media(max-width:850px){.sidebar{width:68px;padding:20px 9px}.brand{padding:0 7px 25px}.brand span:last-child,.nav-label,.nav button .navtext,.sidebar-note{display:none}.nav button{text-align:center;font-size:18px;padding:12px 4px}.app main{margin-left:68px;width:calc(100% - 68px);padding:22px 17px}.stats{grid-template-columns:repeat(2,1fr)}.columns{grid-template-columns:1fr}}
+@media(max-width:520px){.top{align-items:flex-start;gap:10px;flex-direction:column}.welcome{padding:20px}.welcome .emoji{display:none}.stats{gap:9px}.stat{padding:13px}.stat .number{font-size:22px}.formrow{grid-template-columns:1fr}.field.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+ <div class="brand"><div class="logo">✦</div><span>CampusMate</span></div>
+ <div class="nav-label">MENU UTAMA</div>
+ <nav class="nav">
+  <button class="active" data-page="dashboard">⌂ <span class="navtext">　Dashboard</span></button>
+  <button data-page="jadwal">▦ <span class="navtext">　Jadwal Kuliah</span></button>
+  <button data-page="tugas">✓ <span class="navtext">　Pengingat Tugas</span></button>
+  <button data-page="catatan">▤ <span class="navtext">　Catatan Materi</span></button>
+  <button data-page="info">ⓘ <span class="navtext">　Informasi Kampus</span></button>
+  <button data-page="uang">◎ <span class="navtext">　Keuangan</span></button>
+ </nav>
+ <div class="sidebar-note">💡 <b>Tips mahasiswa</b><br>Atur jadwal dan catat tugasmu agar kegiatan kuliah lebih terorganisir.</div>
+</aside>
+<main>
+ <header class="top"><div><div class="eyebrow">ASISTEN MAHASISWA</div><h1 id="pageTitle">Dashboard</h1></div><div class="date" id="today"></div></header>
+
+ <section class="page active" id="dashboard">
+  <div class="welcome"><div><h2>Halo, Mahasiswa! 👋</h2><p>Selamat datang di CampusMate. Yuk, buat hari kuliahmu lebih teratur.</p></div><div class="emoji">🎓</div></div>
+  <div class="stats">
+   <div class="stat"><div class="s-icon">📚</div><div class="number" id="statClasses">0</div><small>Jadwal kuliah</small></div>
+   <div class="stat"><div class="s-icon">📝</div><div class="number" id="statTasks">0</div><small>Tugas belum selesai</small></div>
+   <div class="stat"><div class="s-icon">📒</div><div class="number" id="statNotes">0</div><small>Catatan tersimpan</small></div>
+   <div class="stat"><div class="s-icon">💰</div><div class="number" id="statMoney">Rp0</div><small>Total pengeluaran</small></div>
+  </div>
+  <div class="columns">
+   <div class="panel"><div class="panel-head"><h3>Jadwal Kuliah</h3><button class="btn light" onclick="showPage('jadwal')">Lihat semua</button></div><div id="dashSchedule"></div></div>
+   <div><div class="panel"><div class="panel-head"><h3>Deadline Terdekat</h3><button class="btn light" onclick="showPage('tugas')">Kelola</button></div><div id="dashTasks"></div></div>
+   <div class="panel"><h3>Mulai hari dengan rencana ✨</h3><p class="muted">Tambahkan jadwal, catat tugas, dan pantau pengeluaranmu dari satu tempat.</p></div></div>
+  </div>
+ </section>
+
+ <section class="page" id="jadwal">
+  <div class="section-title"><h2>Jadwal Kuliah</h2><button class="btn" onclick="openForm('scheduleForm')">+ Tambah Jadwal</button></div>
+  <div class="panel" id="scheduleForm" hidden><h3>Jadwal baru</h3><form onsubmit="addSchedule(event)"><div class="formrow">
+   <div class="field"><label>Nama mata kuliah</label><input id="course" required placeholder="Contoh: Pengantar Pariwisata"></div>
+   <div class="field"><label>Hari</label><select id="day"><option>Senin</option><option>Selasa</option><option>Rabu</option><option>Kamis</option><option>Jumat</option><option>Sabtu</option></select></div>
+   <div class="field"><label>Jam</label><input id="classTime" required placeholder="08.00–09.40"></div>
+   <div class="field"><label>Ruang kelas</label><input id="room" placeholder="Contoh: Ruang 204"></div>
+  </div><button class="btn">Simpan Jadwal</button> <button type="button" class="btn light" onclick="closeForm('scheduleForm')">Batal</button></form></div>
+  <div class="panel"><div class="panel-head"><h3>Daftar jadwal</h3><span class="muted">Jadwal perkuliahanmu</span></div><div id="scheduleList"></div></div>
+ </section>
+
+ <section class="page" id="tugas">
+  <div class="section-title"><h2>Pengingat Tugas</h2><button class="btn" onclick="openForm('taskForm')">+ Tambah Tugas</button></div>
+  <div class="panel" id="taskForm" hidden><h3>Tugas baru</h3><form onsubmit="addTask(event)"><div class="formrow">
+   <div class="field"><label>Nama tugas</label><input id="taskName" required placeholder="Contoh: Makalah komunikasi"></div>
+   <div class="field"><label>Mata kuliah</label><input id="taskCourse" placeholder="Nama mata kuliah"></div>
+   <div class="field"><label>Batas pengumpulan</label><input id="deadline" type="date" required></div>
+  </div><button class="btn">Simpan Tugas</button> <button type="button" class="btn light" onclick="closeForm('taskForm')">Batal</button></form></div>
+  <div class="panel"><div class="panel-head"><h3>Daftar tugas</h3><span class="muted">Tandai jika sudah selesai</span></div><div id="taskList"></div></div>
+ </section>
+
+ <section class="page" id="catatan">
+  <div class="section-title"><h2>Catatan Materi</h2><button class="btn" onclick="openForm('noteForm')">+ Catatan Baru</button></div>
+  <div class="panel" id="noteForm" hidden><h3>Tulis catatan</h3><form onsubmit="addNote(event)"><div class="formrow">
+   <div class="field"><label>Judul catatan</label><input id="noteTitle" required placeholder="Judul materi"></div>
+   <div class="field"><label>Mata kuliah</label><input id="noteSubject" placeholder="Nama mata kuliah"></div>
+   <div class="field full"><label>Isi catatan</label><textarea id="noteBody" required placeholder="Tulis ringkasan materi di sini..."></textarea></div>
+  </div><button class="btn">Simpan Catatan</button> <button type="button" class="btn light" onclick="closeForm('noteForm')">Batal</button></form></div>
+  <div class="panel"><div class="panel-head"><h3>Catatan tersimpan</h3></div><div id="noteList"></div></div>
+ </section>
+
+ <section class="page" id="info">
+  <div class="section-title"><h2>Informasi Kampus</h2><button class="btn" onclick="openForm('infoForm')">+ Tambah Informasi</button></div>
+  <div class="panel" id="infoForm" hidden><h3>Informasi baru</h3><form onsubmit="addInfo(event)"><div class="formrow">
+   <div class="field"><label>Judul informasi</label><input id="infoTitle" required placeholder="Contoh: Jadwal Ujian Tengah Semester"></div>
+   <div class="field"><label>Kategori</label><select id="infoType"><option>Pengumuman</option><option>Kegiatan</option><option>Jadwal Ujian</option><option>Lainnya</option></select></div>
+   <div class="field full"><label>Detail</label><textarea id="infoBody" required placeholder="Tulis informasi kampus..."></textarea></div>
+  </div><button class="btn">Simpan Informasi</button> <button type="button" class="btn light" onclick="closeForm('infoForm')">Batal</button></form></div>
+  <div class="panel"><div class="panel-head"><h3>Papan informasi</h3><span class="muted">Informasi yang kamu tambahkan</span></div><div id="infoList"></div></div>
+  <p class="muted">Catatan: informasi pada contoh ini diisi sendiri oleh pengguna, bukan pengumuman resmi kampus.</p>
+ </section>
+
+ <section class="page" id="uang">
+  <div class="section-title"><h2>Keuangan Mahasiswa</h2><button class="btn" onclick="openForm('moneyForm')">+ Catat Pengeluaran</button></div>
+  <div class="stats"><div class="stat"><div class="s-icon">💸</div><div class="number" id="moneyTotal">Rp0</div><small>Total pengeluaran</small></div><div class="stat"><div class="s-icon">🧾</div><div class="number" id="moneyCount">0</div><small>Transaksi tercatat</small></div></div>
+  <div class="panel" id="moneyForm" hidden><h3>Catat pengeluaran</h3><form onsubmit="addMoney(event)"><div class="formrow">
+   <div class="field"><label>Keperluan</label><input id="moneyName" required placeholder="Contoh: Makan siang"></div>
+   <div class="field"><label>Jumlah (Rp)</label><input id="moneyAmount" type="number" min="1" required placeholder="15000"></div>
+   <div class="field"><label>Tanggal</label><input id="moneyDate" type="date" required></div>
+  </div><button class="btn">Simpan Pengeluaran</button> <button type="button" class="btn light" onclick="closeForm('moneyForm')">Batal</button></form></div>
+  <div class="panel"><div class="panel-head"><h3>Riwayat pengeluaran</h3></div><div id="moneyList"></div></div>
+ </section>
+</main></div>
+<script>
+const $=id=>document.getElementById(id);
+const load=(key)=>JSON.parse(localStorage.getItem('cm_'+key)||'[]');
+const save=(key,data)=>localStorage.setItem('cm_'+key,JSON.stringify(data));
+let schedules=load('schedules'),tasks=load('tasks'),notes=load('notes'),infos=load('infos'),money=load('money');
+const days=['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function rupiah(n){return 'Rp'+Number(n||0).toLocaleString('id-ID');}
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));$('pageTitle').textContent=({dashboard:'Dashboard',jadwal:'Jadwal Kuliah',tugas:'Pengingat Tugas',catatan:'Catatan Materi',info:'Informasi Kampus',uang:'Keuangan Mahasiswa'})[id];render();}
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+function openForm(id){$(id).hidden=false;$(id).scrollIntoView({behavior:'smooth',block:'nearest'});}
+function closeForm(id){$(id).hidden=true;}
+function addSchedule(e){e.preventDefault();schedules.push({id:Date.now(),course:$('course').value,day:$('day').value,time:$('classTime').value,room:$('room').value});save('schedules',schedules);e.target.reset();closeForm('scheduleForm');render();}
+function addTask(e){e.preventDefault();tasks.push({id:Date.now(),name:$('taskName').value,course:$('taskCourse').value,date:$('deadline').value,done:false});save('tasks',tasks);e.target.reset();closeForm('taskForm');render();}
+function addNote(e){e.preventDefault();notes.unshift({id:Date.now(),title:$('noteTitle').value,subject:$('noteSubject').value,body:$('noteBody').value});save('notes',notes);e.target.reset();closeForm('noteForm');render();}
+function addInfo(e){e.preventDefault();infos.unshift({id:Date.now(),title:$('infoTitle').value,type:$('infoType').value,body:$('infoBody').value});save('infos',infos);e.target.reset();closeForm('infoForm');render();}
+function addMoney(e){e.preventDefault();money.unshift({id:Date.now(),name:$('moneyName').value,amount:Number($('moneyAmount').value),date:$('moneyDate').value});save('money',money);e.target.reset();closeForm('moneyForm');render();}
+function removeItem(key,id){if(!confirm('Hapus data ini?'))return;let arr=({schedules,tasks,notes,infos,money})[key].filter(x=>x.id!==id);({schedules,tasks,notes,infos,money})[key]=arr;save(key,arr);render();}
+function toggleTask(id){tasks=tasks.map(t=>t.id===id?{...t,done:!t.done}:t);save('tasks',tasks);render();}
+function empty(msg){return `<div class="empty">${msg}</div>`;}
+function render(){
+ const sorted=[...schedules].sort((a,b)=>days.indexOf(a.day)-days.indexOf(b.day));
+ $('scheduleList').innerHTML=sorted.length?sorted.map(s=>`<div class="listrow"><div><strong>${esc(s.course)}</strong><small>${esc(s.day)} · ${esc(s.time)} · ${esc(s.room||'Ruang belum diisi')}</small></div><button class="btn danger" onclick="removeItem('schedules',${s.id})">Hapus</button></div>`).join(''):empty('Belum ada jadwal. Tambahkan jadwal kuliahmu.');
+ const pending=tasks.filter(t=>!t.done).sort((a,b)=>a.date.localeCompare(b.date));
+ $('taskList').innerHTML=tasks.length?[...tasks].sort((a,b)=>a.date.localeCompare(b.date)).map(t=>`<div class="listrow"><div><strong style="${t.done?'text-decoration:line-through;color:#9aa2b1':''}">${esc(t.name)}</strong><small>${esc(t.course||'Mata kuliah belum diisi')} · Deadline: ${esc(t.date)}</small></div><div class="toolbar"><button class="btn light" onclick="toggleTask(${t.id})">${t.done?'Batal selesai':'Selesai'}</button><button class="btn danger" onclick="removeItem('tasks',${t.id})">Hapus</button></div></div>`).join(''):empty('Belum ada tugas. Tambahkan tugas dan deadline-nya.');
+ $('noteList').innerHTML=notes.length?notes.map(n=>`<div class="listrow"><div><strong>${esc(n.title)}</strong><small>${esc(n.subject||'Umum')} · ${esc(n.body).slice(0,150)}${n.body.length>150?'…':''}</small></div><button class="btn danger" onclick="removeItem('notes',${n.id})">Hapus</button></div>`).join(''):empty('Belum ada catatan materi.');
+ $('infoList').innerHTML=infos.length?infos.map(n=>`<div class="notice"><div class="panel-head"><strong>${esc(n.title)}</strong><span class="tag">${esc(n.type)}</span></div><p>${esc(n.body)}</p><button class="btn danger" style="margin-top:10px" onclick="removeItem('infos',${n.id})">Hapus</button></div>`).join(''):empty('Belum ada informasi. Tambahkan pengumuman atau kegiatan kampus.');
+ const total=money.reduce((s,m)=>s+m.amount,0);
+ $('moneyList').innerHTML=money.length?money.map(m=>`<div class="listrow"><div><strong>${esc(m.name)}</strong><small>${esc(m.date)}</small></div><div style="display:flex;align-items:center;gap:12px"><b style="font-size:13px">${rupiah(m.amount)}</b><button class="btn danger" onclick="removeItem('money',${m.id})">Hapus</button></div></div>`).join(''):empty('Belum ada pengeluaran yang dicatat.');
+ $('statClasses').textContent=schedules.length;$('statTasks').textContent=pending.length;$('statNotes').textContent=notes.length;$('statMoney').textContent=rupiah(total);
+ $('moneyTotal').textContent=rupiah(total);$('moneyCount').textContent=money.length;
+ $('dashSchedule').innerHTML=sorted.slice(0,4).map(s=>`<div class="item"><div class="time">${esc(s.time)}</div><div><strong>${esc(s.course)}</strong><small>${esc(s.day)} · ${esc(s.room||'Ruang belum diisi')}</small></div></div>`).join('')||empty('Jadwal kuliah belum ditambahkan.');
+ $('dashTasks').innerHTML=pending.slice(0,4).map(t=>`<div class="item"><div class="time">📝</div><div><strong>${esc(t.name)}</strong><small>Deadline: ${esc(t.date)}</small></div></div>`).join('')||empty('Tidak ada tugas yang menunggu.');
+}
+const now=new Date();$('today').textContent=now.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+$('deadline').min=new Date().toISOString().slice(0,10);$('moneyDate').value=new Date().toISOString().slice(0,10);
+render();
+</script>
+</body></html>
